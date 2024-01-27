@@ -2,21 +2,20 @@ import { useEffect, useState } from 'react';
 import { useLazyGetUserReposQuery, useSearchUsersQuery } from '../redux/gitHubApi/gitHubApi';
 import { useDebounse } from '../hook/hook';
 import RepoCart from '../components/RepoCart';
-import { addFavoriteSelector } from '../hook/addFavorite';
+
 
 const Home = () => {
   const [searh, setSearch] = useState('');
   const debounced =  useDebounse(searh)
   const [open,setOpen] = useState(false)
-  const { data, isLoading, error } = useSearchUsersQuery(debounced,{
+  const { data, isLoading} = useSearchUsersQuery(debounced,{
     skip: debounced.length < 3,
     refetchOnFocus: true
   });
 
-  const state = addFavoriteSelector(state => state.gitHub.favorite)
 
   const [fetchRepos, { data: repos,isLoading:isRepoloading, } ] = useLazyGetUserReposQuery()
-  console.log(repos?.full_name)
+
   
   useEffect(() => {
     setOpen(debounced.length > 3 && data?.length! > 0)
@@ -24,7 +23,7 @@ const Home = () => {
 
 
   const clickGendler = (username: string) => {
-    fetchRepos(username);
+    fetchRepos(username)
     setOpen(false)
   }
 
@@ -40,13 +39,16 @@ const Home = () => {
         />
         {open ? <ul className="absolute top-[42px] left-0 right-0 max-h-[200px]  overflow-y-scroll shadow-md bg-[#191919]">
           {isLoading ? <p className=' text-center'>Loading.....</p> : data?.map(el =>{ 
-            return <li onClick={() => clickGendler(el.login)} className='py-2 px-4 cursor-pointer' key={el.id}>{el.login}</li>
+            return <li onClick={() => clickGendler(el.login)} className='py-2 items-center flex justify-between  px-4 cursor-pointer' key={el.id}>
+              <h1>{el.login}</h1>
+              <img className=' w-[50px] rounded-[25px] h-[50px]' src={el.avatar_url} alt="" />
+            </li>
           })} 
         </ul> : null}
         <div className="container">
         {debounced ? isRepoloading ? <div>loading.....</div> : repos?.map(el =>
           <RepoCart repo={el} key={el.id} />
-          ): null}
+          ) : null}
       </div>
       </div>
     </div>

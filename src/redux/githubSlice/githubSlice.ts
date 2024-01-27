@@ -1,29 +1,31 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { Irepo } from '../../types/type';
 
-const keyLS = 'githb'
+const keys = 'githubMainApi';
 
-  interface States {
-    favorite: string[]
-  }
-
-  const initialState: States = {
-    favorite: JSON.parse(localStorage.getItem(keyLS) ?? '[]')
-  }
+interface States {
+  favorite: Irepo[];
+}
+const initialState: States = {
+  favorite: JSON.parse(localStorage.getItem(keys) ?? '[]'),
+};
 
 export const githubSlice = createSlice({
   name: 'github',
   initialState,
-  reducers:{
-    addFavorite: (state, {payload}: PayloadAction<string>) => {
-      state.favorite.push(payload)
-      localStorage.setItem(keyLS, JSON.stringify(state.favorite))
+  reducers: {
+    addFavorite: (state, { payload }: PayloadAction<Irepo>) => {
+      const isExsict = state.favorite.some(el => el.id === payload.id);
+      if (isExsict) {
+        state.favorite = state.favorite.filter(el => el.id !== payload.id);
+        localStorage.setItem(keys, JSON.stringify(state.favorite));
+      } else {
+        state.favorite.push(payload);
+        localStorage.setItem(keys, JSON.stringify(state.favorite));
+      }
     },
-    RemoveFavorite: (state, {payload}: PayloadAction<string>) => {
-      state.favorite = state.favorite.filter(el => el !== payload)
-      localStorage.setItem(keyLS, JSON.stringify(state.favorite))
-    }
-  }
-})
+  },
+});
 
-export const {actions,reducer} = githubSlice
+export const { actions, reducer } = githubSlice;

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 
 
-export function useDebounse(value:string,delay = 400): string{
-  const [debounced,setdebounced] = useState(value)
+export const useDebounse = (value:string,delay:number = 300):string => {
+  const [debounse,setDebounse] = useState('')
   useEffect(() => {
-    const hadler = setTimeout(() => setdebounced(value),delay)
-    return () => clearTimeout(hadler)
+    const timeout = setTimeout(() => {
+      setDebounse(value)
+    },delay)
+    return () => clearInterval(timeout)
   },[value])
-  return debounced
+  return debounse
 }
